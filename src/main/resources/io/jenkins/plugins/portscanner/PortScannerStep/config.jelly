@@ -1,0 +1,26 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This jelly script is used for per-project configuration.
+
+    See global.jelly for a general discussion about jelly script.
+  -->
+
+  <!--
+    Creates a text field that shows the value of the "name" property.
+    When submitted, it will be passed to the corresponding constructor parameter.
+  -->
+<f:entry title="Scan destination" field="scanDest">
+<f:textbox default="${descriptor.getDefaultScanDest()}"/>
+ </f:entry>
+ 
+ <f:entry title="Name of resut report" field="repName">
+<f:textbox default="${descriptor.getDefaultRepName()}"/>
+ </f:entry>
+ 
+ <f:entry field="enableCipherDetection">
+      <f:checkbox default="true"/>
+      <label>${%Enable cipher detection and strength check in addition to detection of open ports }</label>
+  </f:entry> 
+ 
+</j:jelly>

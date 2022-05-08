@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+  This plugin performs a port scan, detects supported TLS ciphers and checks cipher strength via https://ciphersuite.info/.
+</div>
