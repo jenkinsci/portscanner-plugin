@@ -5,7 +5,7 @@ This port scanner plugin performs:
 * Discovering of all open ports on the destination host 
 * Detection of TLS ports (if this option is enabled, see screenshot below)
 * Detection of supported TLS ciphers for each TLS port
-* Cipher strength check via https://ciphersuite.info/. 
+* Cipher strength check via https://ciphersuite.info/
 * Result report in console output and as archived JSON file
 
 
