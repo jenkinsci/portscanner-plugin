@@ -99,7 +99,7 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
         .create();
     String jsonInString = gson.toJson(openPorts);
     workspace.child(repNameResolved).write(jsonInString, null);
-    listener.getLogger().println("Archiving portScanResult.json..");
+    listener.getLogger().println("Archiving " + repNameResolved + "..");
     ArtifactArchiver artifactArchiver = new ArtifactArchiver(repNameResolved);
     artifactArchiver.perform(run, workspace, env, launcher, listener);
   }
