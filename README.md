@@ -1,7 +1,13 @@
-# Grype vulnerability scanner
+# Port scanner plugin
 
 ## Introduction
-This port scanner plugin performs a port scan, detects supported TLS ciphers and checks cipher strength via https://ciphersuite.info/.
+This port scanner plugin performs: 
+* Discovering of all open ports on the destination host 
+* Detection of TLS ports (if this option is enabled, see screenshot below)
+* Detection of supported TLS ciphers for each TLS port
+* Cipher strength check via https://ciphersuite.info/
+* Result report in console output and as archived JSON file
+
 
 
 ## Getting started
