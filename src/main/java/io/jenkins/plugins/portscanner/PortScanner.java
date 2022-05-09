@@ -11,8 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import io.jenkins.plugins.portscanner.Cipher.CipherState;
-
 public class PortScanner
 {
   private int timeout;
@@ -77,53 +75,5 @@ public class PortScanner
       }
     }
     return openPorts;
-  }
-
-  private void verifyCiphers()
-  {
-    for (OpenPort o : getOpenPorts())
-    {
-      o.detectCiphers();
-    }
-  }
-
-  private List<OpenPort> getOpenPorts()
-  {
-    if (openPorts.isEmpty())
-      try
-      {
-        quickFindOpenPorts();
-      }
-      catch (Exception e)
-      {
-        e.printStackTrace();
-      }
-    return openPorts;
-  }
-  
-  public static void main(String[] args) throws Exception
-  {
-    String hostUnderTest = "192.168.178.189";
-    PortScanner ps = new PortScanner(hostUnderTest, 1000, System.out);
-    ps.verifyCiphers();
-    List<OpenPort> ports = ps.getOpenPorts();
-    for (OpenPort p : ports)
-    {
-      if (p.getSupportedCiphers().size() > 0)
-      {
-        System.out.println("Port " + p + " supports TLS: ");
-        for (Cipher c : p.getSupportedCiphers())
-        {
-          if (c.getIsSecure() == CipherState.SECURE)
-          {
-            System.out.println("Cipher for port " + p.getPortNmb() + " " + c.getName());
-          }
-        }
-      }
-      else
-      {
-        System.err.println("Port " + p + " doesn't support TLS!");
-      }
-    }
   }
 }
