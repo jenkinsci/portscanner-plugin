@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +64,7 @@ public class Cipher implements Serializable
     URL url2 = new URL("https://ciphersuite.info/api/cs/");
     URLConnection request = url2.openConnection();
     request.connect();
-    JsonElement root = JsonParser.parseReader(new InputStreamReader((InputStream) request.getContent()));
+    JsonElement root = JsonParser.parseReader(new InputStreamReader((InputStream) request.getContent(), StandardCharsets.UTF_8));
     JsonObject rootobj = root.getAsJsonObject(); // May be an array, may be an object.
     JsonArray suits = rootobj.getAsJsonArray("ciphersuites");
     for (JsonElement el : suits)

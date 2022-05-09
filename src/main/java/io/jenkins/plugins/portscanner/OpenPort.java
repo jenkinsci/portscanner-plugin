@@ -73,6 +73,7 @@ public class OpenPort implements Serializable
     {
       connection.setEnabledCipherSuites(new String[] { cipher });
       connection.setEnabledProtocols(new String[] { "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3" });
+      connection.setEnabledCipherSuites(connection.getSupportedCipherSuites());
       connection.setSoTimeout(1000);
       connection.startHandshake();
       return connection.getSession().getProtocol();
@@ -81,13 +82,6 @@ public class OpenPort implements Serializable
 
   public void detectCiphers( )
   {
-    Security.setProperty("jdk.tls.disabledAlgorithms", "");
-    System.setProperty("jdk.tls.namedGroups",
-        "secp256r1, secp384r1, secp521r1, sect283k1, sect283r1, sect409k1, sect409r1, sect571k1, sect571r1, secp256k1");
-    System.setProperty("jdk.disabled.namedCurves", "");
-    Security.setProperty("crypto.policy", "unlimited"); // For Java 9+
-    System.setProperty("jdk.sunec.disableNative", "false");
-
     SSLServerSocketFactory ssf = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
     for (final String cipher : ssf.getSupportedCipherSuites())
     {
