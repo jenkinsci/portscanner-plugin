@@ -1,6 +1,7 @@
 package io.jenkins.plugins.portscanner;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -19,9 +20,11 @@ import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.remoting.Future;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import jenkins.security.MasterToSlaveCallable;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 
@@ -50,53 +53,84 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
     String hostUnderTest = Util.replaceMacro(scanDest, run.getEnvironment(listener));
     String repNameResolved = Util.replaceMacro(repName, run.getEnvironment(listener));
     int timeout = 1000;
-    
     PortScanner ps = new PortScanner(hostUnderTest, timeout, listener.getLogger());
     List<OpenPort> openPorts = ps.quickFindOpenPorts();
     listener.getLogger().println("There are " + openPorts.size() + " detected open ports on host " + hostUnderTest
         + " (probed with a timeout of " + timeout + "ms)");
     listener.getLogger().print("Open ports: ");
-    openPorts.stream().forEach(s-> listener.getLogger().print(s.getPortNmb() + " "));
+    openPorts.stream().forEach(s -> listener.getLogger().print(s.getPortNmb() + " "));
     listener.getLogger().println();
     if (Boolean.TRUE.equals(enableCipherDetection))
     {
       listener.getLogger().println();
-      listener.getLogger().println("Detecting supported ciphers for " + hostUnderTest + " and checking cipher strength under https://ciphersuite.info/");
+      listener.getLogger().println("Detecting supported ciphers for " + hostUnderTest
+          + " and checking cipher strength under https://ciphersuite.info/");
+      List<Future<OpenPort>> futures = new ArrayList<>();
       for (OpenPort p : openPorts)
       {
-        p.detectCiphers();
+        Future<OpenPort> f = launcher.getChannel().callAsync(new MasterToSlaveCallable<OpenPort, IOException>()
+        {
+          private static final long serialVersionUID = 1L;
+          @Override
+          public OpenPort call() throws IOException
+          {
+            try
+            {
+              p.detectCiphers();
+            }
+            catch (Exception e)
+            {
+              e.printStackTrace();
+            }
+            return p;
+          }
+        });
+        futures.add(f);
+      }
+
+      for (Future<OpenPort> future : futures)
+      {
+        OpenPort p = null;
+        try
+        {
+          p = future.get();
+        }
+        catch (Exception e)
+        {
+          e.printStackTrace();
+          continue;
+        }
         if (!p.getSupportedCiphers().isEmpty())
         {
-          listener.getLogger().println("Port " +  hostUnderTest + ":"+ p.getPortNmb() + " supports TLS: ");
+          listener.getLogger().println("Port " + hostUnderTest + ":" + p.getPortNmb() + " supports TLS: ");
           for (Cipher c : p.getSupportedCiphers())
           {
-            listener.getLogger().println("Cipher for port " +  hostUnderTest + ":" + p.getPortNmb() + " " + c.getProt() + "/"+  c.getName() + "  " + c.getIsSecure() );
-          }  
+            listener.getLogger().println("Cipher for port " + hostUnderTest + ":" + p.getPortNmb() + " " + c.getProt()
+                + "/" + c.getName() + "  " + c.getIsSecure());
+          }
           listener.getLogger().println();
         }
         else
         {
-          listener.getLogger().println("Port "  +  hostUnderTest + ":"+ p.getPortNmb() + " doesn't support TLS!");
+          listener.getLogger().println("Port " + hostUnderTest + ":" + p.getPortNmb() + " doesn't support TLS!");
         }
       }
     }
-    
-    Gson gson = new GsonBuilder().setPrettyPrinting()
-        .setExclusionStrategies( new ExclusionStrategy()
+
+    Gson gson = new GsonBuilder().setPrettyPrinting().setExclusionStrategies(new ExclusionStrategy()
     {
       @Override
       public boolean shouldSkipField(FieldAttributes f)
       {
         return f.getName().contentEquals("supportedCiphers") && !enableCipherDetection;
       }
-      
+
       @Override
       public boolean shouldSkipClass(Class<?> clazz)
       {
         return false;
       }
-    })
-        .create();
+    }).create();
     String jsonInString = gson.toJson(openPorts);
     workspace.child(repNameResolved).write(jsonInString, null);
     listener.getLogger().println("Archiving " + repNameResolved + "..");
