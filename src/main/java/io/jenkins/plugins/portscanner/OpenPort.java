@@ -13,12 +13,14 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class OpenPort implements Serializable
 {
   private static final long serialVersionUID = 1L;
   private int portNmb;
   private List<Cipher> supportedCiphers = new ArrayList<>();
-  private transient String hostUnderTest;
+  private String hostUnderTest;
 
   public OpenPort(String hostUnderTest, int portNmb)
   {
@@ -73,7 +75,8 @@ public class OpenPort implements Serializable
       return connection.getSession().getProtocol();
     }
   }
-
+  @SuppressFBWarnings(value = "DE_MIGHT_IGNORE",
+      justification = "Ignore exception if the socket isn't a TLS socket")
   public void detectCiphers()
   {
     Security.setProperty("jdk.tls.disabledAlgorithms", "");
@@ -97,6 +100,7 @@ public class OpenPort implements Serializable
     {
       for (String cipher : ssf.getSupportedCipherSuites())
       {
+        
         try
         {
           String prot = connectWithCipher(hostUnderTest, portNmb, cipher,p);

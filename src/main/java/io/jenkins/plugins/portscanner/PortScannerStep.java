@@ -66,25 +66,14 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
       listener.getLogger().println("Detecting supported ciphers for " + hostUnderTest
           + " and checking cipher strength under https://ciphersuite.info/");
       List<Future<OpenPort>> futures = new ArrayList<>();
+      if (launcher == null || launcher.getChannel() == null)
+      {
+        listener.getLogger().println("Internal error: launcher.getChannel() is " + " null" );
+        return;
+      }
       for (OpenPort p : openPorts)
       {
-        Future<OpenPort> f = launcher.getChannel().callAsync(new MasterToSlaveCallable<OpenPort, IOException>()
-        {
-          private static final long serialVersionUID = 1L;
-          @Override
-          public OpenPort call() throws IOException
-          {
-            try
-            {
-              p.detectCiphers();
-            }
-            catch (Exception e)
-            {
-              e.printStackTrace();
-            }
-            return p;
-          }
-        });
+        Future<OpenPort> f = launcher.getChannel().callAsync(new CipherDetector(p));
         futures.add(f);
       }
 
@@ -122,7 +111,7 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
       @Override
       public boolean shouldSkipField(FieldAttributes f)
       {
-        return f.getName().contentEquals("supportedCiphers") && !enableCipherDetection;
+        return f.getName().contentEquals("hostUnderTest") || (f.getName().contentEquals("supportedCiphers") && !enableCipherDetection);
       }
 
       @Override
@@ -158,15 +147,37 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
     this.repName = repName;
   }
 
-  public Boolean getAutoInstall()
+  public Boolean getEnableCipherDetection()
   {
     return enableCipherDetection;
   }
 
-  public void setAutoInstall(Boolean enableCipherDetection)
+  public void setEnableCipherDetection(Boolean enableCipherDetection)
   {
     this.enableCipherDetection = enableCipherDetection;
   }
+  
+  private static class CipherDetector extends MasterToSlaveCallable<OpenPort, IOException> {
+
+    private static final long serialVersionUID = 1L;
+    private OpenPort port;
+    public CipherDetector(OpenPort port)
+    {
+      this.port = port;
+    }
+    public OpenPort call() throws IOException
+    {
+      try
+      {
+        port.detectCiphers();
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+      return port;
+    }
+}
 
   @Extension(ordinal = -2)
   public static final class DescriptorImpl extends BuildStepDescriptor<Builder>
