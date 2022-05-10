@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
         <?m2e ignore?>
@@ -12,7 +10,7 @@
 	</parent>
 	<groupId>io.jenkins.plugins</groupId>
 	<artifactId>portscanner</artifactId>
-	<version>${revision}${changelist}</version>
+	<version>1.0</version>
 	<packaging>hpi</packaging>
 	<name>Port scanner Plugin</name>
 	<url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
@@ -22,12 +20,10 @@
 			<url>https://opensource.org/licenses/MIT</url>
 		</license>
 	</licenses>
-	<scm child.scm.connection.inherit.append.path="false"
-		child.scm.developerConnection.inherit.append.path="false"
-		child.scm.url.inherit.append.path="false">
+	<scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
 		<connection>scm:git:https://github.com/${gitHubRepo}</connection>
 		<developerConnection>scm:git:https://github.com/${gitHubRepo}</developerConnection>
-		<tag>${scmTag}</tag>
+		<tag>portscanner-1.0</tag>
 		<url>https://github.com/${gitHubRepo}</url>
 	</scm>
 	<properties>
