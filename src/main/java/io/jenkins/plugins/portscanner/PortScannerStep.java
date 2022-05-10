@@ -46,6 +46,7 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
     this.enableCipherDetection = enableCipherDetection;
   }
 
+  @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "The check is already done")
   @Override
   public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
       throws InterruptedException, IOException

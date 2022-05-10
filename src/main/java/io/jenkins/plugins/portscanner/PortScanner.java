@@ -27,12 +27,13 @@ public class PortScanner
     this.timeout = timeout;
     this.logger = logger;
   }
-  
+
 
   public Future<SimpleEntry<Integer, Boolean>> portIsOpen(final String ip, final int port)
   {
     return execService.submit(new Callable<SimpleEntry<Integer, Boolean>>()
     {
+      @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "It's a  false positive")
       @Override
       public SimpleEntry<Integer, Boolean> call()
       {
@@ -55,7 +56,7 @@ public class PortScanner
 
   public List<OpenPort> quickFindOpenPorts()
   {
-    logger.println("Scanning " + hostUnderTest + ", ports from 0 to 65535.." );
+    logger.println("Scanning " + hostUnderTest + ", ports from 0 to 65535..");
     final List<Future<SimpleEntry<Integer, Boolean>>> futures = new ArrayList<>();
     for (int port = 1; port <= 65535; port++)
     {
