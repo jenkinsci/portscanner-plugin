@@ -18,7 +18,7 @@ public class PortScanner
   private int timeout;
   private String hostUnderTest;
   private List<OpenPort> openPorts = new ArrayList<>();
-  private transient ExecutorService execService = Executors.newFixedThreadPool(20);
+  private transient ExecutorService execService = Executors.newFixedThreadPool(200);
   private PrintStream logger;
 
   public PortScanner(String hostUnderTest, int timeout, PrintStream logger)
