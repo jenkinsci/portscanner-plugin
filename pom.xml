@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.jenkins.plugins</groupId>
 	<artifactId>portscanner</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.3-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Port scanner Plugin</name>
 	<url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
