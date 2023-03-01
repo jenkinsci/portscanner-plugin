@@ -18,14 +18,15 @@ public class PortScanner
   private int timeout;
   private String hostUnderTest;
   private List<OpenPort> openPorts = new ArrayList<>();
-  private transient ExecutorService execService = Executors.newFixedThreadPool(200);
+  private transient ExecutorService execService;
   private PrintStream logger;
 
-  public PortScanner(String hostUnderTest, int timeout, PrintStream logger)
+  public PortScanner(String hostUnderTest, int timeout,int threadNmb, PrintStream logger)
   {
     this.hostUnderTest = hostUnderTest;
     this.timeout = timeout;
     this.logger = logger;
+    execService = Executors.newFixedThreadPool(threadNmb);
   }
 
 

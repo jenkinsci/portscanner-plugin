@@ -36,14 +36,18 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
   private String scanDest;
   private String repName;
   private Boolean enableCipherDetection = true;
+  private Integer timeoutInMs = 200;
+  private Integer threadNmb = 220;
 
   // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
   @DataBoundConstructor
-  public PortScannerStep(String scanDest, String repName, Boolean enableCipherDetection)
+  public PortScannerStep(String scanDest, String repName, Boolean enableCipherDetection, Integer timeoutInMs, Integer threadNmb)
   {
     this.scanDest = scanDest;
     this.repName = repName;
     this.enableCipherDetection = enableCipherDetection;
+    this.timeoutInMs = timeoutInMs;
+    this.threadNmb = threadNmb;
   }
 
   @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "The check is already done")
@@ -53,11 +57,10 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
   {
     String hostUnderTest = Util.replaceMacro(scanDest, run.getEnvironment(listener));
     String repNameResolved = Util.replaceMacro(repName, run.getEnvironment(listener));
-    int timeout = 1000;
-    PortScanner ps = new PortScanner(hostUnderTest, timeout, listener.getLogger());
+    PortScanner ps = new PortScanner(hostUnderTest, timeoutInMs, this.threadNmb,listener.getLogger());
     List<OpenPort> openPorts = ps.quickFindOpenPorts();
     listener.getLogger().println("There are " + openPorts.size() + " detected open ports on host " + hostUnderTest
-        + " (probed with a timeout of " + timeout + "ms)");
+        + " (probed with a timeout of " + timeoutInMs + "ms)");
     listener.getLogger().print("Open ports: ");
     openPorts.stream().forEach(s -> listener.getLogger().print(s.getPortNmb() + " "));
     listener.getLogger().println();
@@ -126,6 +129,26 @@ public class PortScannerStep extends Builder implements SimpleBuildStep
     listener.getLogger().println("Archiving " + repNameResolved + "..");
     ArtifactArchiver artifactArchiver = new ArtifactArchiver(repNameResolved);
     artifactArchiver.perform(run, workspace, env, launcher, listener);
+  }
+ 
+  public Integer getTimeoutInMs()
+  {
+    return timeoutInMs;
+  }
+
+  public void setTimeoutInMs(Integer timeoutInMs)
+  {
+    this.timeoutInMs = timeoutInMs;
+  }
+  
+  public Integer getThreadNmb()
+  {
+    return threadNmb;
+  }
+
+  public void setThreadNmb(Integer threadNmb)
+  {
+    this.threadNmb = threadNmb;
   }
 
   public String getScanDest()

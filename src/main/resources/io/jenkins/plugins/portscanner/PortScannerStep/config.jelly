@@ -23,4 +23,14 @@
       <label>${%Enable cipher detection and strength check in addition to detection of open ports }</label>
   </f:entry> 
  
+ 
+ <f:entry title="Timeout in ms" field="timeoutInMs">
+ <f:number min="10" max="10000" default="200" />
+ </f:entry>
+ 
+ 
+ <f:entry title="Threads" field="threadNmb">
+ <f:number min="20" max="1000" default="220" />
+ </f:entry> 
+ 
 </j:jelly>
